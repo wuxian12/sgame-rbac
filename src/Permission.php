@@ -1,20 +1,30 @@
 <?php
 namespace Wuxian\Rbac;
 
-use App\Model\Permission;
-
-
 class Permission
 {
 
+    // 对应的 model
+    protected $modelQuery;
+
+    /**
+     * 获取指定模型获取数据
+     * @param array $permission_ids 权限id
+     * @return array
+     */
+    public static function getModel($modelName) : array
+    {
+        $this->modelQuery = '\\Wuxian\\Rbac\\'.ucfirst($modelName).'\\Permission';
+        return new self();
+    }
     /**
      * 获取权限列表
      * @param array $permission_ids 权限id
      * @return array
      */
-    public static function getPermissionList($permission_ids = []) : array
+    public function getPermissionList($permission_ids = []) : array
     {
-        return Permission::query()->when($permission_ids, function ($query, $permission_ids) {
+        return $this->modelQuery::query()->when($permission_ids, function ($query, $permission_ids) {
             return $query->whereIn('id', $permission_ids);
         })->orderBy('sort_order', 'desc')->get()->toArray();
     }
@@ -24,7 +34,7 @@ class Permission
      * @param array $data
      * @return array
      */
-    public static function addPermission($data) : int
+    public function addPermission($data) : int
     {
         return Permission::::query()->insertGetId($data);
     }

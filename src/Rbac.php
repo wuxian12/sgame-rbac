@@ -11,6 +11,9 @@ class Rbac implements RbacInterface
 	//rbac配置参数
 	protected $config = [];
 
+    // 对应的 model 的 key 值
+    protected $modelName = 'hyperf';
+
 	public function __construct($config = [])
     {
         $this->setConfig($config);
@@ -31,6 +34,18 @@ class Rbac implements RbacInterface
 		$this->config = $config;
 	}
 
+    //获取模型名字
+    public function getModelNmae() : string
+    {
+        return $this->modelName;
+    }
+
+    //设置模型名字
+    public function setConfig($modelName) :void
+    {
+        $this->modelName = $modelName;
+    }
+
 	//获取超级权限用户id
 	public function getSuperId() : array
 	{
@@ -40,7 +55,7 @@ class Rbac implements RbacInterface
 	//获取用户权限【左侧边栏】
     public function menu(int $adminId) :array
     {
-    	return FunctionUtil::getTree($this->permissionAll());
+    	return FunctionUtil::getTree($this->permissionAll($adminId));
     }
     //获取所有权限
     public function permissionList() :array
@@ -71,7 +86,10 @@ class Rbac implements RbacInterface
     }
 
     //用户获取角色
-    public function getRoleIdByAdminId(int $adminId):array;
+    public function getRoleIdByAdminId(int $adminId):array
+    {
+        
+    }
 
     //角色获取权限id
     public function getPermissionIdsByRoleId(int $roleId):arrray
@@ -106,7 +124,7 @@ class Rbac implements RbacInterface
     	return Role::delRole($roleIds);
     }
     //获取角色
-    public function getRoleInfo(int $roleId);:array
+    public function getRoleInfo(int $roleId):array
     {
     	$where[] = ['id', '=', $roleId];
     	return Role::getRoleInfo($where);
@@ -150,7 +168,7 @@ class Rbac implements RbacInterface
         //取出超级管理员
         $super = $this->getSuperId();
         if (in_array($admin_id, $super)) { //超级管理员的权限
-            $permission_arr = static::superPermission();
+            $permission_arr = $this->superPermission();
         } else {
             $permission_arr = static::permissionListByUserid($admin_id);
         }
@@ -160,7 +178,7 @@ class Rbac implements RbacInterface
     //超级管理员权限
     public static function superPermission()
     {
-        return Permission::getPermissionList();
+        return Permission::getModel($this->getModelNmae())->getPermissionList();
     }
 
     /**
@@ -176,7 +194,7 @@ class Rbac implements RbacInterface
         }
         $permission_ids = RolePermission::permissionIdByRoleids($role_arr);
         if (! empty($permission_ids)) {
-            return Permission::getPermissionList($permission_ids);
+            return Permission::getModel($this->getModelNmae())->getPermissionList($permission_ids);
         }
         return [];
     }

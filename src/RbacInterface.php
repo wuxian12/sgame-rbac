@@ -1,4 +1,7 @@
 <?php
+
+namespace Wuxian\Rbac;
+
 interface RbacInterface
 {
 	//获取用户权限【左侧边栏】
@@ -33,7 +36,7 @@ interface RbacInterface
     //删除角色
     public function delRole(array $roleIds):int;
     //获取角色
-    public function getRoleInfo(int $roleId);:array;
+    public function getRoleInfo(int $roleId):array;
 
     //用户列表
     public function adminList(int $pageSize, array $where):array;
@@ -42,7 +45,7 @@ interface RbacInterface
     //编辑用户
     public function editAdmin(int $adminId,array $data):int;
     //删除用户
-    public function delAdmin(int $adminIds):int;
+    public function delAdmin(array $adminIds):int;
     //获取用户
     public function getAdminInfo(int $adminId):array;
 }

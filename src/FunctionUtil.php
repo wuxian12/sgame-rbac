@@ -1,5 +1,7 @@
 <?php
 
+namespace Wuxian\Rbac;
+
 class FunctionUtil
 {
 	//递归实现侧边栏(层级从属关系)
