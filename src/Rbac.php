@@ -40,13 +40,14 @@ class Rbac implements RbacInterface
 	//获取用户权限【左侧边栏】
     public function menu(int $adminId) :array
     {
-    	return FunctionUtil::getTree($this->permissionAll($adminId));
+    	return FunctionUtil::getTree($this->permissionAll([['is_web', '=', 1]],$adminId));
     }
     //获取所有权限
     public function permissionList() :array
     {
     	return FunctionUtil::getTree($this->superPermission());
     }
+
     //添加权限
     public function addPermission(array $data) :int
     {
@@ -70,18 +71,6 @@ class Rbac implements RbacInterface
     	return Permission::getInstance($this->getConfig())->getPermissionInfo($where);
     }
 
-    //用户获取角色
-    public function getRoleIdByAdminId(int $adminId):array
-    {
-        
-    }
-
-    //角色获取权限id
-    public function getPermissionIdsByRoleId(int $roleId):arrray
-    {
-        return RolePermission::permissionIdByRoleids([$roleId]);
-    }
-
     //获取所有角色
     public function roleAll():array
     {
@@ -90,7 +79,7 @@ class Rbac implements RbacInterface
     //角色列表
     public function roleList(int $pageSize, $where = []):array
     {
-    	return Role::getInstance($this->getConfig())->roleAll($pageSize, $where);
+    	return Role::getInstance($this->getConfig())->roleList($pageSize, $where);
     }
     //添加角色
     public function addRole(array $data) :int
@@ -127,8 +116,7 @@ class Rbac implements RbacInterface
     //编辑用户
     public function editAdmin(int $adminId, array $data):int
     {
-    	$where[] = ['id', '=', $adminId];
-    	return Admin::getInstance($this->getConfig())->editAdmin($where,$data);
+    	return Admin::getInstance($this->getConfig())->editAdmin($adminId,$data);
     }
     //删除用户
     public function delAdmin(array $adminIds):int
@@ -147,22 +135,22 @@ class Rbac implements RbacInterface
      * @param int $admin_id 用户id
      * @return array
      */
-    public function permissionAll(int $admin_id) : array
+    public function permissionAll(array $where = [], int $admin_id) : array
     {
         //取出超级管理员
         $super = $this->getSuperId();
         if (in_array($admin_id, $super)) { //超级管理员的权限
-            $permission_arr = $this->superPermission();
+            $permission_arr = $this->superPermission($where);
         } else {
-            $permission_arr = $this->permissionListByUserid($admin_id);
+            $permission_arr = $this->permissionListByUserid($admin_id,$where);
         }
         return $permission_arr;
     }
 
     //超级管理员权限
-    public function superPermission()
+    public function superPermission(array $where = [])
     {
-        return Permission::getInstance($this->getConfig())->getPermissionList();
+        return Permission::getInstance($this->getConfig())->getPermissionList($where);
     }
 
     /**
@@ -170,34 +158,32 @@ class Rbac implements RbacInterface
      * @param int $admin_id 用户id
      * @return array
      */
-    public function permissionListByUserid(int $admin_id) : array
+    public function permissionListByUserid(int $admin_id, array $where = []) : array
     {
-        $role_arr = RoleAdmin::rolesIdByUserid($admin_id);
+        $role_arr = RoleAdmin::getInstance($this->getConfig())->roleIdByUserid($admin_id);
         if (empty($role_arr)) {
             return [];
         }
-        $permission_ids = RolePermission::permissionIdByRoleids($role_arr);
+        $permission_ids = RolePermission::getInstance($this->getConfig())->permissionIdByRoleids($role_arr);
         if (! empty($permission_ids)) {
-            return Permission::getInstance($this->getConfig())->getPermissionList($permission_ids);
+            return Permission::getInstance($this->getConfig())->getPermissionList($where,$permission_ids);
         }
         return [];
     }
 
-    //所有角色列表
-    public function getRoleAll() : array
+
+    //通过某角色获取相应的权限id
+    public function getPermissionIdsByRoleId(int $role_id) : array
     {
-        return Role::getInstance($this->getConfig())->roleAll();
+        
+        return RolePermission::getInstance($this->getConfig())->permissionIdByRoleids([$role_id]);
+        
     }
 
-    //通过某角色获取相应的权限
-    public function permissionListByRole(int $role_id) : array
+    //新增角色权限
+    public function addPermissionIdsRoleId(int $role_id, string $permissionIds) : int
     {
-        $permission_ids = RolePermission::permissionIdByRoleids([$role_id]);
-        //通过权限id找到相关的权限
-        if (! empty($permission_ids)) {
-            return Permission::getInstance($this->getConfig())->getPermissionList($permission_ids);
-        }
-        return [];
+        return RolePermission::getInstance($this->getConfig())->addRolepermission($role_id,$permissionIds);
     }
 
     //通过某角色id获取相应用户id
@@ -246,7 +232,7 @@ class Rbac implements RbacInterface
     public function permissionIsOk(int $admin_id, string $identity) : bool
     {
         //通过用户找到权限
-        $permission_arr = $this->permissionAll($admin_id);
+        $permission_arr = $this->permissionAll([],$admin_id);
         if (empty($permission_arr)) {
             return false;
         }

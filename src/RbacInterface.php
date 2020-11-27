@@ -19,10 +19,16 @@ interface RbacInterface
 
     //用户是否用户权限
     public function permissionIsOk(int $admin_id, string $identity) : bool;
-    //用户获取角色
+    //用户获取角色id
     public function getRoleIdByUserid(int $adminId):array;
-    //角色获取权限
-    public function getPermissionIdsByRoleId(int $roleId):arrray;
+    //获取角色用户id
+    public function getAdminIdsByRoleId(int $adminId):array;
+    //用户获取角色
+    public function roleListByUserid(int $adminId):array;
+    //角色获取权限id
+    public function getPermissionIdsByRoleId(int $role_id):array;
+    //新增角色权限
+    public function addPermissionIdsRoleId(int $roleId, string $permissionIds):int;
 
 
     //获取所有角色

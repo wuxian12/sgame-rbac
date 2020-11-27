@@ -51,15 +51,20 @@ abstract class CommonAbstract
      */
     public function connect(array $options = [])
     {
-        
-        $name = md5(serialize($options).$this->modelDriver);
-        
-        if (!isset($this->instance[$name])) {
-            $type = !empty($options['type']) ? $options['type'] : 'hyperf';
-            $className = '\\Wuxian\\Rbac\\'.ucfirst($type).'\\'.$this->modelDriver;
-            $this->instance[$name] = $className;
+        if(!empty($options['modelDriver'])){
+            $name = md5(serialize($options));  
+            $className = $options['modelDriver'];
+            $this->instance[$name] = new $className();
+            
+        }else{
+            $name = md5(serialize($options).$this->modelDriver);
+            if (!isset($this->instance[$name])) {
+                $type = !empty($options['type']) ? $options['type'] : 'hyperf';
+                $className = '\\Wuxian\\Rbac\\'.ucfirst($type).'\\'.$this->modelDriver;
+                $this->instance[$name] = $className;
+            }
         }
-
+        
         return $this->instance[$name];
     }
 

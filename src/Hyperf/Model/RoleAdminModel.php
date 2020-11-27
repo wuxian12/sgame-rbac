@@ -9,7 +9,7 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf-cloud/hyperf/blob/master/LICENSE
  */
-namespace Wuxian\Rbac\Hyperf;
+namespace Wuxian\Rbac\Hyperf\Model;
 
 use Hyperf\DbConnection\Model\Model;
 

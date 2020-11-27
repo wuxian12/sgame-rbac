@@ -11,9 +11,11 @@ class PermissionDriver
      * @param array $permission_ids 权限id
      * @return array
      */
-    public static function getPermissionList($permission_ids = []) : array
+    public static function getPermissionList($where = [],$permission_ids = []) : array
     {
-        return PermissionModel::query()->when($permission_ids, function ($query, $permission_ids) {
+        return PermissionModel::query()->when($where, function ($query, $where) {
+            return $query->where($where);
+        })->when($permission_ids, function ($query, $permission_ids) {
             return $query->whereIn('id', $permission_ids);
         })->orderBy('sort_order', 'desc')->get()->toArray();
     }

@@ -15,5 +15,37 @@ class RolePermissionDriver
         return RolePermissionModel::query()->whereIn('role_id', $role_ids)->pluck('permission_id')->toArray();
     }
 
+    /**
+     * 添加用户角色
+     * @param array $data
+     * @return array
+     */
+    public static function addRolepermission(int $role_id, string $permissionIds)
+    {
+    	//删除之前的
+    	static::delRolepermission('role_id',[$role_id]);
+    	$permissionIdsArr = explode(',', $permissionIds);
+    	if(empty($permissionIdsArr)){
+    		throw new \LogicException("permissionIds can not empty",60001);
+    	}
+    	$map = [];
+    	foreach ($permissionIdsArr as $v) {
+    		$tmp = [];
+    		$tmp['permission_id'] = $v;
+            $tmp['role_id'] = $role_id;
+            $map[] = $tmp;
+    	}
+        return intval(RolePermissionModel::query()->insert($map));
+    }
+
+
+    //删除
+    public static function delRolepermission($key,$whereIn)
+    {
+        return RolePermissionModel::query()->whereIn($key,$whereIn)->delete();
+    
+    }
+}
+
 
     
