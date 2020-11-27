@@ -11,7 +11,7 @@ class PermissionDriver
      * @param array $permission_ids 权限id
      * @return array
      */
-    public function getPermissionList($permission_ids = []) : array
+    public static function getPermissionList($permission_ids = []) : array
     {
         return PermissionModel::query()->when($permission_ids, function ($query, $permission_ids) {
             return $query->whereIn('id', $permission_ids);
@@ -23,14 +23,16 @@ class PermissionDriver
      * @param array $data
      * @return array
      */
-    public function addPermission($data) : int
+    public static function addPermission($data) : int
     {
-        return PermissionModel::::query()->insertGetId($data);
+        $data['add_time'] = time();
+        return PermissionModel::query()->insertGetId($data);
     }
 
     //更新
     public static function editPermission($where, $data) : int
     {
+        $data['update_time'] = time();
         return PermissionModel::query()->where($where)->update($data);
     }
 

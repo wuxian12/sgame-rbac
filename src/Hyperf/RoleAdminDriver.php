@@ -2,7 +2,7 @@
 
 declare (strict_types = 1);
 
-namespace Wuxian\Rbac;
+namespace Wuxian\Rbac\Hyperf;
 
 use Wuxian\Rbac\Hyperf\Model\RoleAdminModel;
 

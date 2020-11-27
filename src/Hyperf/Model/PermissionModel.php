@@ -29,7 +29,7 @@ class PermissionModel extends Model
      *
      * @var array
      */
-    protected $fillable = ['identity', 'name', 'sort_order', 'parent_id', 'add_time', 'update_time', 'url'];
+    protected $fillable = ['identity', 'name', 'sort_order', 'parent_id', 'add_time', 'update_time', 'url','is_web'];
 
     /**
      * The attributes that should be cast to native types.
@@ -39,5 +39,6 @@ class PermissionModel extends Model
     protected $casts = [
         'add_time' => 'datetime:Y-m-d H:i:s',
     ];
+
 }
 

@@ -1,5 +1,5 @@
 <?php
-namespace Wuxian\Rbac;
+namespace Wuxian\Rbac\Hyperf;
 
 use Wuxian\Rbac\Hyperf\Model\RolePermissionModel;
 

@@ -31,18 +31,6 @@ class Rbac implements RbacInterface
 		$this->config = $config;
 	}
 
-    //获取模型名字
-    public function getModelNmae() : string
-    {
-        return $this->modelName;
-    }
-
-    //设置模型名字
-    public function setConfig($modelName) :void
-    {
-        $this->modelName = $modelName;
-    }
-
 	//获取超级权限用户id
 	public function getSuperId() : array
 	{
@@ -57,7 +45,7 @@ class Rbac implements RbacInterface
     //获取所有权限
     public function permissionList() :array
     {
-    	return FunctionUtil::getTree(static::superPermission());
+    	return FunctionUtil::getTree($this->superPermission());
     }
     //添加权限
     public function addPermission(array $data) :int
@@ -68,7 +56,7 @@ class Rbac implements RbacInterface
     public function editPermission(int $permissionId,array $data) :int
     {
     	$where[] = ['id', '=', $permissionId];
-    	return Permission::getInstance($this->getConfig())->editPermission($where,$data);
+    	return Permission::getInstance($this->getConfig())->editPermission($permissionId,$data);
     }
     //删除权限
     public function delPermission(array $permissionIds) :int
@@ -97,62 +85,61 @@ class Rbac implements RbacInterface
     //获取所有角色
     public function roleAll():array
     {
-    	return Role::roleAll();
+    	return Role::getInstance($this->getConfig())->roleAll();
     }
     //角色列表
     public function roleList(int $pageSize, $where = []):array
     {
-    	return Role::roleAll($pageSize, $where);
+    	return Role::getInstance($this->getConfig())->roleAll($pageSize, $where);
     }
     //添加角色
     public function addRole(array $data) :int
     {
-    	return Role::addRole($data);
+    	return Role::getInstance($this->getConfig())->addRole($data);
     }
     //编辑角色
     public function editRole(int $roleId,array $data) :int
     {
-    	$where[] = ['id', '=', $roleId];
-    	return Role::editRole($where,$data);
+    	return Role::getInstance($this->getConfig())->editRole($roleId,$data);
     }
     //删除角色
     public function delRole(array $roleIds):int
     {
-    	return Role::delRole($roleIds);
+    	return Role::getInstance($this->getConfig())->delRole($roleIds);
     }
     //获取角色
     public function getRoleInfo(int $roleId):array
     {
     	$where[] = ['id', '=', $roleId];
-    	return Role::getRoleInfo($where);
+    	return Role::getInstance($this->getConfig())->getRoleInfo($where);
     }
 
     //用户列表
     public function adminList(int $pageSize, $where = []):array
     {
-    	return Admin::getAdminList($pageSize,$where);
+    	return Admin::getInstance($this->getConfig())->getAdminList($pageSize,$where);
     }
     //添加用户
     public function addAdmin(array $data):int
     {
-    	return Admin::addAdmin($data);
+    	return Admin::getInstance($this->getConfig())->addAdmin($data);
     }
     //编辑用户
     public function editAdmin(int $adminId, array $data):int
     {
     	$where[] = ['id', '=', $adminId];
-    	return Admin::editAdmin($where,$data);
+    	return Admin::getInstance($this->getConfig())->editAdmin($where,$data);
     }
     //删除用户
     public function delAdmin(array $adminIds):int
     {
-    	return Admin::delAdmin($adminIds);
+    	return Admin::getInstance($this->getConfig())->delAdmin($adminIds);
     }
     //获取用户
     public function getAdminInfo(int $adminId):array
     {
     	$where[] = ['id', '=', $adminId];
-    	return Admin::getAdminInfo($where);
+    	return Admin::getInstance($this->getConfig())->getAdminInfo($where);
     }
 	
     /**
@@ -167,13 +154,13 @@ class Rbac implements RbacInterface
         if (in_array($admin_id, $super)) { //超级管理员的权限
             $permission_arr = $this->superPermission();
         } else {
-            $permission_arr = static::permissionListByUserid($admin_id);
+            $permission_arr = $this->permissionListByUserid($admin_id);
         }
         return $permission_arr;
     }
 
     //超级管理员权限
-    public static function superPermission()
+    public function superPermission()
     {
         return Permission::getInstance($this->getConfig())->getPermissionList();
     }
@@ -183,7 +170,7 @@ class Rbac implements RbacInterface
      * @param int $admin_id 用户id
      * @return array
      */
-    public static function permissionListByUserid(int $admin_id) : array
+    public function permissionListByUserid(int $admin_id) : array
     {
         $role_arr = RoleAdmin::rolesIdByUserid($admin_id);
         if (empty($role_arr)) {
@@ -199,7 +186,7 @@ class Rbac implements RbacInterface
     //所有角色列表
     public function getRoleAll() : array
     {
-        return Role::roleAll();
+        return Role::getInstance($this->getConfig())->roleAll();
     }
 
     //通过某角色获取相应的权限
@@ -216,7 +203,7 @@ class Rbac implements RbacInterface
     //通过某角色id获取相应用户id
     public function getAdminIdsByRoleId(int $role_id) : array
     {
-    	return RoleAdmin::adminIdsByRoleId($role_id);
+    	return RoleAdmin::getInstance($this->getConfig())->adminIdsByRoleId($role_id);
     }
 
     /**
@@ -226,7 +213,7 @@ class Rbac implements RbacInterface
      */
     public function getRoleIdByUserid(int $admin_id) : array
     {
-        return RoleAdmin::roleIdByUserid($admin_id);
+        return RoleAdmin::getInstance($this->getConfig())->roleIdByUserid($admin_id);
     }
 
     
@@ -238,11 +225,11 @@ class Rbac implements RbacInterface
     public function roleListByUserid(int $admin_id) : array
     {
         //通过角色找到权限id
-        $role_ids = RoleAdmin::roleIdByUserid($admin_id);
+        $role_ids = RoleAdmin::getInstance($this->getConfig())->roleIdByUserid($admin_id);
         $data = [];
         //通过权限id找到相关的权限
         if (! empty($role_ids)) {
-            $data = Role::roleAll($role_ids);
+            $data = Role::getInstance($this->getConfig())->roleAll($role_ids);
         } else {
             if (in_array($admin_id, $this->getSuperId())) {
                 $data[0]['name'] = '超级管理员';
@@ -259,7 +246,7 @@ class Rbac implements RbacInterface
     public function permissionIsOk(int $admin_id, string $identity) : bool
     {
         //通过用户找到权限
-        $permission_arr = static::permissionAll($admin_id);
+        $permission_arr = $this->permissionAll($admin_id);
         if (empty($permission_arr)) {
             return false;
         }

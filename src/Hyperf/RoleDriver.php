@@ -1,5 +1,5 @@
 <?php
-namespace Wuxian\Rbac;
+namespace Wuxian\Rbac\Hyperf;
 
 use Wuxian\Rbac\Hyperf\Model\RoleModel;
 
@@ -8,7 +8,7 @@ class RoleDriver
 	//所有角色列表
     public static function roleAll($role_ids = []) : array
     {
-        return RoleModel::query()->when($role_ids, function ($query, $role_ids) {
+        return RoleModel::query()->where('is_del',1)->when($role_ids, function ($query, $role_ids) {
             return $query->whereIn('id', $role_ids);
         })->get()->toArray();
     }
@@ -20,6 +20,7 @@ class RoleDriver
      */
     public static function roleList($pageSize, $where = []) : array
     {
+        $where[] = ['is_del', '=', 1];
         return RoleModel::query()->where($where)->paginate(intval($pageSize), ['*'], 'page')->toArray();
     }
 
@@ -30,13 +31,30 @@ class RoleDriver
      */
     public static function addRole($data) : int
     {
+        $where = [];
+        $where[] = ['is_del', '=', 1];
+        $where[] = ['name', '=', $data['name'] ?? ''];
+        if(!empty(static::getRoleInfo($where))){
+            throw new LogicException("name is duplicate,please update name",60001);  
+        }
+        $data['add_time'] = time();
         return RoleModel::::query()->insertGetId($data);
     }
 
     //更新
-    public static function editRole($where, $data) : int
+    public static function editRole($id, $data) : int
     {
-        return RoleModel::query()->where($where)->update($data);
+        $where = [];
+        $where[] = ['is_del', '=', 1];
+        $where[] = ['name', '=', $data['name'] ?? ''];
+        $info = static::getRoleInfo($where);
+        if(!empty($info) && $info['id'] != $id){
+            throw new LogicException("name is duplicate,please update name",60001);  
+        }
+        $data['update_time'] = time();
+        $where1 = [];
+        $where1[] = ['id', '=', $id];
+        return RoleModel::query()->where($where1)->update($data);
     }
 
     //删除

@@ -4,6 +4,12 @@ namespace Wuxian\Rbac;
 abstract class CommonAbstract
 {
     /**
+     * 模型驱动
+     * @var array
+     */
+    public $modelDriver = '';
+
+    /**
      * 模型名字
      * @var array
      */
@@ -46,12 +52,12 @@ abstract class CommonAbstract
     public function connect(array $options = [])
     {
         
-        $name = md5(serialize($options).$this->modelName);
+        $name = md5(serialize($options).$this->modelDriver);
         
         if (!isset($this->instance[$name])) {
             $type = !empty($options['type']) ? $options['type'] : 'hyperf';
-
-            $this->instance[$name] = '\\Wuxian\\Rbac\\'.ucfirst($type).'\\'.$this->modelName;
+            $className = '\\Wuxian\\Rbac\\'.ucfirst($type).'\\'.$this->modelDriver;
+            $this->instance[$name] = $className;
         }
 
         return $this->instance[$name];
@@ -69,13 +75,12 @@ abstract class CommonAbstract
 
             $this->handler = $this->connect($options);
         }
-
         return $this->handler;
     }
 
     public function __call($method, $args)
     {
-        return call_user_func_array([$this->init(), $method], ...$args);
+        return call_user_func_array([$this->init(), $method], $args);
     }
 
     
