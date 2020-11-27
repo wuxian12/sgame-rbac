@@ -9,11 +9,11 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf-cloud/hyperf/blob/master/LICENSE
  */
-namespace Wuxian\Rbac\Hyperf;
+namespace Wuxian\Rbac\Hyperf\Model;
 
 use Hyperf\DbConnection\Model\Model;
 
-class Role extends Model
+class PermissionModel extends Model
 {
     public $timestamps = false;
 
@@ -22,14 +22,14 @@ class Role extends Model
      *
      * @var string
      */
-    protected $table = 'role';
+    protected $table = 'permission';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['name', 'add_time', 'update_time', 'is_del'];
+    protected $fillable = ['identity', 'name', 'sort_order', 'parent_id', 'add_time', 'update_time', 'url'];
 
     /**
      * The attributes that should be cast to native types.
@@ -40,3 +40,4 @@ class Role extends Model
         'add_time' => 'datetime:Y-m-d H:i:s',
     ];
 }
+

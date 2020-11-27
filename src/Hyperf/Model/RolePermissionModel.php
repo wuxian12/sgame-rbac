@@ -13,7 +13,7 @@ namespace Wuxian\Rbac\Hyperf;
 
 use Hyperf\DbConnection\Model\Model;
 
-class RoleAdmin extends Model
+class RolePermissionModel extends Model
 {
     public $timestamps = false;
 
@@ -22,14 +22,14 @@ class RoleAdmin extends Model
      *
      * @var string
      */
-    protected $table = 'role_admin';
+    protected $table = 'role_permission';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['admin_id', 'role_id'];
+    protected $fillable = ['permission_id', 'role_id'];
 
     /**
      * The attributes that should be cast to native types.
@@ -39,4 +39,3 @@ class RoleAdmin extends Model
     protected $casts = [
     ];
 }
-
