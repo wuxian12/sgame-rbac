@@ -13,6 +13,9 @@ class Rbac implements RbacInterface
 
 	public function __construct($config = [])
     {
+        if(empty($config)){
+            $config = FunctionUtil::getDefualtConfig();
+        }
         $this->setConfig($config);
     }
 
@@ -56,7 +59,6 @@ class Rbac implements RbacInterface
     //编辑权限
     public function editPermission(int $permissionId,array $data) :int
     {
-    	$where[] = ['id', '=', $permissionId];
     	return Permission::getInstance($this->getConfig())->editPermission($permissionId,$data);
     }
     //删除权限
@@ -106,28 +108,59 @@ class Rbac implements RbacInterface
     //用户列表
     public function adminList(int $pageSize, $where = []):array
     {
-    	return Admin::getInstance($this->getConfig())->getAdminList($pageSize,$where);
+        $config = $this->getConfig();
+        if($config['table_num'] == 4){
+            return Admin::getInstance($this->getConfig())->getAdminListFour($pageSize,$where);
+        }else{
+            return Admin::getInstance($this->getConfig())->getAdminList($pageSize,$where);
+        }
+    	
     }
     //添加用户
     public function addAdmin(array $data):int
     {
-    	return Admin::getInstance($this->getConfig())->addAdmin($data);
+        $config = $this->getConfig();
+        if($config['table_num'] == 4){
+            return Admin::getInstance($this->getConfig())->addAdminFour($data);
+        }else{
+            return Admin::getInstance($this->getConfig())->addAdmin($data);
+        }
+    	
     }
     //编辑用户
     public function editAdmin(int $adminId, array $data):int
     {
-    	return Admin::getInstance($this->getConfig())->editAdmin($adminId,$data);
+        $config = $this->getConfig();
+        if($config['table_num'] == 4){
+            return Admin::getInstance($this->getConfig())->editAdminFour($adminId,$data);
+        }else{
+            return Admin::getInstance($this->getConfig())->editAdmin($adminId,$data);
+        }
+    	
     }
     //删除用户
     public function delAdmin(array $adminIds):int
     {
-    	return Admin::getInstance($this->getConfig())->delAdmin($adminIds);
+        $config = $this->getConfig();
+        if($config['table_num'] == 4){
+            return Admin::getInstance($this->getConfig())->delAdminFour($adminIds);
+        }else{
+            return Admin::getInstance($this->getConfig())->delAdmin($adminIds);
+        }
+    	
     }
     //获取用户
     public function getAdminInfo(int $adminId):array
     {
-    	$where[] = ['id', '=', $adminId];
-    	return Admin::getInstance($this->getConfig())->getAdminInfo($where);
+        $config = $this->getConfig();
+        $where[] = ['id', '=', $adminId];
+        if($config['table_num'] == 4){
+            return Admin::getInstance($this->getConfig())->getAdminInfoFour($where);
+        }else{
+            return Admin::getInstance($this->getConfig())->getAdminInfo($where);
+        }
+    	
+    	
     }
 	
     /**
@@ -160,9 +193,15 @@ class Rbac implements RbacInterface
      */
     public function permissionListByUserid(int $admin_id, array $where = []) : array
     {
-        $role_arr = RoleAdmin::getInstance($this->getConfig())->roleIdByUserid($admin_id);
-        if (empty($role_arr)) {
-            return [];
+        $config = $this->getConfig();
+        if($config['table_num'] == 4){
+            $role_id = Admin::getInstance($this->getConfig())->getRolleId($admin_id);
+            $role_arr = empty($role_id) ? [] : [$role_id];
+        }else{
+            $role_arr = RoleAdmin::getInstance($this->getConfig())->roleIdByUserid($admin_id);
+            if (empty($role_arr)) {
+                return [];
+            }
         }
         $permission_ids = RolePermission::getInstance($this->getConfig())->permissionIdByRoleids($role_arr);
         if (! empty($permission_ids)) {
@@ -189,7 +228,13 @@ class Rbac implements RbacInterface
     //通过某角色id获取相应用户id
     public function getAdminIdsByRoleId(int $role_id) : array
     {
-    	return RoleAdmin::getInstance($this->getConfig())->adminIdsByRoleId($role_id);
+        $config = $this->getConfig();
+        if($config['table_num'] == 4){
+            return Admin::getInstance($this->getConfig())->getAdminIdByRoleId($role_id);
+        }else{
+            return RoleAdmin::getInstance($this->getConfig())->adminIdsByRoleId($role_id);
+        }
+    	
     }
 
     /**
@@ -199,7 +244,13 @@ class Rbac implements RbacInterface
      */
     public function getRoleIdByUserid(int $admin_id) : array
     {
-        return RoleAdmin::getInstance($this->getConfig())->roleIdByUserid($admin_id);
+        $config = $this->getConfig();
+        if($config['table_num'] == 4){
+            return [Admin::getInstance($this->getConfig())->getRolleId($admin_id)];
+        }else{
+            return RoleAdmin::getInstance($this->getConfig())->roleIdByUserid($admin_id);
+        }
+        
     }
 
     
@@ -210,8 +261,13 @@ class Rbac implements RbacInterface
      */
     public function roleListByUserid(int $admin_id) : array
     {
-        //通过角色找到权限id
-        $role_ids = RoleAdmin::getInstance($this->getConfig())->roleIdByUserid($admin_id);
+        $config = $this->getConfig();
+        if($config['table_num'] == 4){
+            $role_id = Admin::getInstance($this->getConfig())->getRolleId($admin_id);
+            $role_ids = empty($role_id) ? [] : [$role_id];
+        }else{
+            $role_ids = RoleAdmin::getInstance($this->getConfig())->roleIdByUserid($admin_id);
+        }
         $data = [];
         //通过权限id找到相关的权限
         if (! empty($role_ids)) {

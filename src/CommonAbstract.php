@@ -43,30 +43,8 @@ abstract class CommonAbstract
         return new static($config);
     }
 
-    /**
-     * 连接模型
-     * @access public
-     * @param  array         $options  配置数组
-     * @return Driver
-     */
-    public function connect(array $options = [])
-    {
-        if(!empty($options['modelDriver'])){
-            $name = md5(serialize($options));  
-            $className = $options['modelDriver'];
-            $this->instance[$name] = new $className();
-            
-        }else{
-            $name = md5(serialize($options).$this->modelDriver);
-            if (!isset($this->instance[$name])) {
-                $type = !empty($options['type']) ? $options['type'] : 'hyperf';
-                $className = '\\Wuxian\\Rbac\\'.ucfirst($type).'\\'.$this->modelDriver;
-                $this->instance[$name] = $className;
-            }
-        }
-        
-        return $this->instance[$name];
-    }
+    //获取连接
+    abstract public function connect(array $options = []);
 
     /**
      * 自动初始化模型

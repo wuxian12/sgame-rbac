@@ -4,11 +4,25 @@ namespace Wuxian\Rbac;
 
 interface RbacInterface
 {
-	//获取用户权限【左侧边栏】
+    /**
+     * 获取用户权限【左侧边栏】
+     *
+     * @param integer $adminId  用户id
+     * @return array
+     */
     public function menu(int $adminId) :array;
-	//获取所有权限
+    /**
+     * 获取所有权限
+     *
+     * @return array
+     */
     public function permissionList() :array;
-    //添加权限
+    /**
+     * 添加权限
+     *
+     * @param array $data
+     * @return integer
+     */
     public function addPermission(array $data) :int;
     //编辑权限
     public function editPermission(int $permissionId,array $data) :int;
@@ -17,23 +31,41 @@ interface RbacInterface
     //获取权限
     public function getPermissionInfo(int $permissionId):array;
 
-    //用户是否用户权限
-    public function permissionIsOk(int $admin_id, string $identity) : bool;
+    /**
+     * 用户是否拥有接口权限
+     *
+     * @param integer $adminId  用户id
+     * @param string $identity  接口权限地址
+     * @return boolean
+     */
+    public function permissionIsOk(int $adminId, string $identity) : bool;
     //用户获取角色id
     public function getRoleIdByUserid(int $adminId):array;
     //获取角色用户id
-    public function getAdminIdsByRoleId(int $adminId):array;
+    public function getAdminIdsByRoleId(int $roleId):array;
     //用户获取角色
     public function roleListByUserid(int $adminId):array;
     //角色获取权限id
-    public function getPermissionIdsByRoleId(int $role_id):array;
-    //新增角色权限
+    public function getPermissionIdsByRoleId(int $roleId):array;
+    /**
+     * 新增角色权限
+     *
+     * @param integer $roleId  角色id
+     * @param string $permissionIds  权限id，逗号分割 例如 1,2,3
+     * @return integer
+     */
     public function addPermissionIdsRoleId(int $roleId, string $permissionIds):int;
 
 
     //获取所有角色
     public function roleAll():array;
-    //角色列表
+    /**
+     * 角色列表
+     *
+     * @param integer $pageSize  每页数量
+     * @param array $where
+     * @return array
+     */
     public function roleList(int $pageSize, array $where):array;
     //添加角色
     public function addRole(array $data) :int;

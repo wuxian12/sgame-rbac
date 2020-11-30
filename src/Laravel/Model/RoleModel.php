@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Wuxian\Rbac\Hyperf\Model;
+namespace Wuxian\Rbac\Laravel\Model;
 
-use Hyperf\DbConnection\Model\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class RoleModel extends Model
 {

@@ -1,7 +1,7 @@
 <?php
-namespace Wuxian\Rbac\Hyperf;
+namespace Wuxian\Rbac\Thinkphp;
 
-use Wuxian\Rbac\Hyperf\Model\PermissionModel;
+use Wuxian\Rbac\Thinkphp\Model\PermissionModel;
 
 class PermissionDriver
 {

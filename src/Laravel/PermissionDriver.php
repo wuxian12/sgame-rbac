@@ -1,7 +1,7 @@
 <?php
-namespace Wuxian\Rbac\Hyperf;
+namespace Wuxian\Rbac\Laravel;
 
-use Wuxian\Rbac\Hyperf\Model\PermissionModel;
+use Wuxian\Rbac\Laravel\Model\PermissionModel;
 
 class PermissionDriver
 {

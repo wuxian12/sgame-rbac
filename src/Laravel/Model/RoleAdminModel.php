@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Wuxian\Rbac\Hyperf\Model;
+namespace Wuxian\Rbac\Laravel\Model;
 
-use Hyperf\DbConnection\Model\Model;
+use Illuminate\Database\Eloquent\Model;
 
-class RoleModel extends Model
+class RoleAdminModel extends Model
 {
     public $timestamps = false;
 
@@ -15,14 +15,14 @@ class RoleModel extends Model
      *
      * @var string
      */
-    protected $table = 'role';
+    protected $table = 'role_admin';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['name', 'add_time', 'update_time', 'is_del'];
+    protected $fillable = ['admin_id', 'role_id'];
 
     /**
      * The attributes that should be cast to native types.
@@ -30,6 +30,6 @@ class RoleModel extends Model
      * @var array
      */
     protected $casts = [
-        'add_time' => 'datetime:Y-m-d H:i:s',
     ];
 }
+

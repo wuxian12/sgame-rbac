@@ -2,10 +2,10 @@
 
 declare (strict_types = 1);
 
-namespace Wuxian\Rbac\Hyperf;
+namespace Wuxian\Rbac\Thinkphp;
 
-use Wuxian\Rbac\Hyperf\Model\AdminModel;
-use Hyperf\DbConnection\Db;
+use Wuxian\Rbac\Thinkphp\Model\AdminModel;
+use think\Db;
 
 class AdminDriver
 {
@@ -25,7 +25,7 @@ class AdminDriver
                 $role_info = static::getAdminRole($v['id']);
                 $data['data'][$k]['role_name'] = $role_info['role_name'];
                 $data['data'][$k]['role_id'] = $role_info['role_id']; 
-                
+               
             }
         }
         return $data;
@@ -69,7 +69,7 @@ class AdminDriver
         }
         $role_id = $data['role_id'] ?? 0;
         unset($data['role_id']);
-        Db::beginTransaction();
+        Db::startTrans();
         try{
             $data['add_time'] = time();
             $admin_id = AdminModel::query()->insertGetId($data);

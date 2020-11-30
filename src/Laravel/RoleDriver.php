@@ -1,7 +1,7 @@
 <?php
-namespace Wuxian\Rbac\Hyperf;
+namespace Wuxian\Rbac\Laravel;
 
-use Wuxian\Rbac\Hyperf\Model\RoleModel;
+use Wuxian\Rbac\Laravel\Model\RoleModel;
 
 class RoleDriver
 {

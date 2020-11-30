@@ -2,10 +2,10 @@
 
 declare (strict_types = 1);
 
-namespace Wuxian\Rbac\Hyperf;
+namespace Wuxian\Rbac\Laravel;
 
-use Wuxian\Rbac\Hyperf\Model\AdminModel;
-use Hyperf\DbConnection\Db;
+use Wuxian\Rbac\Laravel\Model\AdminModel;
+use Illuminate\Support\Facades\DB as Db;
 
 class AdminDriver
 {
@@ -25,7 +25,7 @@ class AdminDriver
                 $role_info = static::getAdminRole($v['id']);
                 $data['data'][$k]['role_name'] = $role_info['role_name'];
                 $data['data'][$k]['role_id'] = $role_info['role_id']; 
-                
+           
             }
         }
         return $data;
@@ -192,7 +192,7 @@ class AdminDriver
             $role_info = static::getAdminRole($info['id']);
             $info['role_name'] = $role_info['role_name'];
             $info['role_id'] = $role_info['role_id'];
-            
+
             return $info;
         }
     }

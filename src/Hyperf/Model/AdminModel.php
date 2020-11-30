@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://doc.hyperf.io
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf-cloud/hyperf/blob/master/LICENSE
- */
+
 namespace Wuxian\Rbac\Hyperf\Model;
 
 use Hyperf\DbConnection\Model\Model;
@@ -42,7 +35,7 @@ class AdminModel extends Model
 
     public function role()
     {
-        return $this->hasOne(RoleAdminModel::class, 'admin_id', 'id');
+        return $this->hasMany(RoleAdminModel::class, 'admin_id', 'id');
     }
 }
 

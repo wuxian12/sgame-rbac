@@ -1,6 +1,8 @@
-## 该组件是RBAC权限角色组件，适合各种php框架,便宜扩展，例如角色表名，字段可以自由定义
+## 该组件是RBAC权限角色组件，适合各种php框架,方便扩展，例如角色表名，字段可以自由定义
 
-##  所有的方法可以参照 接口RbacInterface,数据驱动可以自由添加目前只有hyperf,
+##  所有的方法可以参照 接口RbacInterface,数据驱动可以自由添加
+
+##  支持4张表的BRAC和5张表的RBAC
 
 ```php
 		$obj = new Rbac($config); OR new RbacFactory();

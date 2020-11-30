@@ -1,7 +1,7 @@
 <?php
-namespace Wuxian\Rbac\Hyperf;
+namespace Wuxian\Rbac\Thinkphp;
 
-use Wuxian\Rbac\Hyperf\Model\RolePermissionModel;
+use Wuxian\Rbac\Thinkphp\Model\RolePermissionModel;
 
 class RolePermissionDriver
 {
