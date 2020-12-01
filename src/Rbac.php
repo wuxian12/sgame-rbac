@@ -46,9 +46,9 @@ class Rbac implements RbacInterface
     	return FunctionUtil::getTree($this->permissionAll([['is_web', '=', 1]],$adminId));
     }
     //获取所有权限
-    public function permissionList() :array
+    public function permissionList(array $data = []) :array
     {
-    	return FunctionUtil::getTree($this->superPermission());
+    	return FunctionUtil::getTree($this->superPermission($data));
     }
 
     //添加权限
@@ -172,7 +172,7 @@ class Rbac implements RbacInterface
     {
         //取出超级管理员
         $super = $this->getSuperId();
-        if (in_array($admin_id, $super)) { //超级管理员的权限
+        if (in_array($admin_id, $super) || empty($admin_id)) { //超级管理员的权限
             $permission_arr = $this->superPermission($where);
         } else {
             $permission_arr = $this->permissionListByUserid($admin_id,$where);

@@ -16,7 +16,15 @@ interface RbacInterface
      *
      * @return array
      */
-    public function permissionList() :array;
+    public function permissionList(array $where) :array;
+    /**
+     * 未结构化的全部权限
+     *
+     * @param array $where 
+     * @param integer $admin_id
+     * @return array
+     */
+    public function permissionAll(array $where, int $admin_id) :array;
     /**
      * 添加权限
      *
