@@ -94,4 +94,6 @@ interface RbacInterface
     public function delAdmin(array $adminIds):int;
     //获取用户
     public function getAdminInfo(int $adminId):array;
+    //通过用户名获取用户
+    public function getAdminByName(string $name):array;
 }

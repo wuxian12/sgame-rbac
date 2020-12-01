@@ -162,6 +162,20 @@ class Rbac implements RbacInterface
     	
     	
     }
+
+    //获取用户
+    public function getAdminByName(string $name):array
+    {
+        $config = $this->getConfig();
+        $where[] = ['name', '=', $name];
+        if($config['table_num'] == 4){
+            return Admin::getInstance($this->getConfig())->getAdminInfoFour($where);
+        }else{
+            return Admin::getInstance($this->getConfig())->getAdminInfo($where);
+        }
+        
+        
+    }
 	
     /**
      * 获取某个用户的权限列表
