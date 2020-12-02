@@ -34,7 +34,7 @@ class RolePermissionDriver
     }
 
     /**
-     * 添加用户角色
+     * 添加角色权限
      * @param array $data
      * @return array
      */

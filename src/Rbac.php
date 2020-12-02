@@ -251,6 +251,34 @@ class Rbac implements RbacInterface
         return RolePermission::getInstance($config)->addRolepermission($role_id,$permissionIds,$config);
     }
 
+    //删除角色的权限
+    public function delPermissionIdsRoleId(string $key, array $roleIds) : int
+    {
+        $config = $this->getConfig();
+        return RolePermission::getInstance($config)->delRolepermission($key, $roleIds,$config);
+    }
+
+    //删除角色用户表
+    public function delAdminIdsRoleIds(string $key, array $roleIds) : int
+    {
+        $config = $this->getConfig();
+        return RoleAdmin::getInstance($config)->delAdminIdsRoleIds($key, $roleIds,$config);
+    }
+
+    //新增用户角色
+    public function addAdminIdRoleIds(int $adminId, string $roleIds) : int
+    {
+        $config = $this->getConfig();
+        return RolePermission::getInstance($config)->addAdminIdRoleIds($adminId, $roleIds,$config);
+    }
+
+    //新增角色用户
+    public function addRoleIdAdminIds(int $roleId, string $adminIds) : int
+    {
+        $config = $this->getConfig();
+        return RolePermission::getInstance($config)->addRoleIdAdminIds($roleId, $adminIds,$config);
+    }
+
     //通过某角色id获取相应用户id
     public function getAdminIdsByRoleId(int $role_id) : array
     {

@@ -63,6 +63,39 @@ interface RbacInterface
      * @return integer
      */
     public function addPermissionIdsRoleId(int $roleId, string $permissionIds):int;
+    /**
+     * 删除角色的权限
+     *
+     * @param string $key  要删除表字段的key
+     * @param array $roleIds  要删除值id
+     * @return integer
+     */
+    public function delPermissionIdsRoleId(string $key,array $roleIds):int;
+    /**
+     * 删除角色用户表
+     *
+     * @param string $key  要删除表字段的key
+     * @param array $roleIds  要删除值id
+     * @return integer
+     */
+    public function delAdminIdsRoleIds(string $key,array $roleIds):int;
+    /**
+     * 新增用户角色
+     *
+     * @param integer $adminId  用户id
+     * @param string $roleIds  角色id，逗号分割 例如 1,2,3
+     * @return integer
+     */
+    public function addAdminIdRoleIds(int $adminId, string $roleIds):int;
+
+    /**
+     * 新增角色用户
+     *
+     * @param integer $RoleId  角色id
+     * @param string $AdminIds  用户id，逗号分割 例如 1,2,3
+     * @return integer
+     */
+    public function addRoleIdAdminIds(int $roleId, string $adminIds):int;
 
 
     //获取所有角色

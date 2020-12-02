@@ -64,5 +64,49 @@ class RoleAdminDriver
     
     }
 
+    /**
+     * 添加用户角色
+     */
+    public static function addAdminIdRoleIds($adminId, $roleIds, $config = [])
+    {
+        //删除之前的
+        static::delRoleAdmin('admin_id',[$adminId],$config);
+        $roleIdsArr = explode(',', $roleIds);
+        if(empty($roleIdsArr)){
+            throw new \LogicException("roleIds can not empty",60001);
+        }
+        $map = [];
+        foreach ($roleIdsArr as $v) {
+            $tmp = [];
+            $tmp['role_id'] = $v;
+            $tmp['admin_id'] = $adminId;
+            $map[] = $tmp;
+        }
+        static::init($config);
+        return intval(static::$driver->newQuery()->insert($map));
+    }
+
+    /**
+     * 添加角色用户
+     */
+    public static function addRoleIdAdminIds($roleId, $adminIds, $config = [])
+    {
+        //删除之前的
+        static::delRoleAdmin('role_id',[$roleId],$config);
+        $adminIdsArr = explode(',', $adminIds);
+        if(empty($adminIdsArr)){
+            throw new \LogicException("adminIds can not empty",60001);
+        }
+        $map = [];
+        foreach ($roleIdsArr as $v) {
+            $tmp = [];
+            $tmp['admin_id'] = $v;
+            $tmp['role_id'] = $roleId;
+            $map[] = $tmp;
+        }
+        static::init($config);
+        return intval(static::$driver->newQuery()->insert($map));
+    }
+
     
 }
