@@ -9,15 +9,26 @@ use Hyperf\DbConnection\Db;
 
 class AdminDriver
 {
+    protected static $driver;
+
+    public static function init($table = '')
+    {
+        static::$driver = new AdminModel();
+        if(!empty($table)){
+            static::$driver->setTable($table);
+        }
+        return new static();
+    }
     /**
      * 获取用户列表
      * @param array $where
      * @return array
      */
-    public static function getAdminList($pageSize, $where = [])
+    public static function getAdminList($pageSize, $where = [], $table = '')
     {
         $where[] = ['is_del', '=', 1];
-        $data = AdminModel::query()->when($where, function ($query, $where) {
+        static::init($table);
+        $data = static::$driver->newQuery()->when($where, function ($query, $where) {
             return $query->where($where);
         })->orderBy('id', 'desc')->paginate(intval($pageSize), ['*'], 'page')->toArray();
         if(!empty($data['data'])){
@@ -36,16 +47,16 @@ class AdminDriver
      * @param array $where
      * @return array
      */
-    public static function getAdminListFour($pageSize, $where = [])
+    public static function getAdminListFour($pageSize, $where = [], $table = '')
     {
         $role_name = RoleDriver::getRoleNameList();
         $where[] = ['is_del', '=', 1];
-        $data = AdminModel::query()->when($where, function ($query, $where) {
+        static::init($table);
+        $data = static::$driver->newQuery()->when($where, function ($query, $where) {
             return $query->where($where);
         })->orderBy('id', 'desc')->paginate(intval($pageSize), ['*'], 'page')->toArray();
         if(!empty($data['data'])){
             foreach ($data['data'] as $k => $v) {
-                $role_info = static::getAdminRole($v['id']);
                 $data['data'][$k]['role_name'] = $role_name[$v['role_id']] ?? '';
             }
         }
@@ -59,7 +70,7 @@ class AdminDriver
      * @param array $data
      * @return array
      */
-    public static function addAdmin($data)
+    public static function addAdmin($data, $table = '')
     {
         $where = [];
         $where[] = ['is_del', '=', 1];
@@ -72,7 +83,8 @@ class AdminDriver
         Db::beginTransaction();
         try{
             $data['add_time'] = time();
-            $admin_id = AdminModel::query()->insertGetId($data);
+            static::init($table);
+            $admin_id = static::$driver->newQuery()->insertGetId($data);
             if(!empty($role_id)){
                 $map['admin_id'] = $admin_id;
                 $map['role_id'] = $role_id;
@@ -92,7 +104,7 @@ class AdminDriver
      * @param array $data
      * @return array
      */
-    public static function addAdminFour($data)
+    public static function addAdminFour($data, $table = '')
     {
         $where = [];
         $where[] = ['is_del', '=', 1];
@@ -101,12 +113,13 @@ class AdminDriver
             throw new \LogicException("name is duplicate,please update name",60001);  
         }
         $data['add_time'] = time();
-        return AdminModel::query()->insertGetId($data);   
+        static::init($table);
+        return static::$driver->newQuery()->insertGetId($data);   
         
     }
 
     //更新
-    public static function editAdmin($id, $data)
+    public static function editAdmin($id, $data, $table = '')
     {
         $where = [];
         $where[] = ['is_del', '=', 1];
@@ -122,7 +135,8 @@ class AdminDriver
             $data['update_time'] = time();
             $where1 = [];
             $where1[] = ['id', '=', $id];
-            $count = AdminModel::query()->where($where1)->update($data);
+            static::init($table);
+            $count = static::$driver->newQuery()->where($where1)->update($data);
             if(!empty($role_id)){
                 //删除之前的
                 RoleAdminDriver::delRoleAdmin('admin_id',[$id]);
@@ -139,7 +153,7 @@ class AdminDriver
     }
 
     //更新  4张表
-    public static function editAdminFour($id, $data)
+    public static function editAdminFour($id, $data, $table = '')
     {
         $where = [];
         $where[] = ['is_del', '=', 1];
@@ -152,16 +166,18 @@ class AdminDriver
         $data['update_time'] = time();
         $where1 = [];
         $where1[] = ['id', '=', $id];
-        return AdminModel::query()->where($where1)->update($data);
+        static::init($table);
+        return static::$driver->newQuery()->where($where1)->update($data);
             
     }
 
 
     //删除
-    public static function delAdmin($whereIn)
+    public static function delAdmin($whereIn, $table = '')
     {
         try{
-            $count = AdminModel::query()->whereIn('id',$whereIn)->update(['is_del'=>2]);
+            static::init($table);
+            $count = static::$driver->newQuery()->whereIn('id',$whereIn)->update(['is_del'=>2]);
             RoleAdminDriver::delRoleAdmin('admin_id',$whereIn);
             Db::commit();
             return $count; 
@@ -174,17 +190,18 @@ class AdminDriver
     }
 
     //删除  4张表
-    public static function delAdminFour($whereIn)
+    public static function delAdminFour($whereIn, $table = '')
     {
-        
-        return AdminModel::query()->whereIn('id',$whereIn)->update(['is_del'=>2]);
+        static::init($table);
+        return static::$driver->newQuery()->whereIn('id',$whereIn)->update(['is_del'=>2]);
        
     }
 
     //获取用户信息
-    public static function getAdminInfo($where)
+    public static function getAdminInfo($where, $table = '')
     {
-        $info = AdminModel::query()->where($where)->first();
+        static::init($table);
+        $info = static::$driver->newQuery()->where($where)->first();
         if(empty($info)){
             return [];
         }else{
@@ -198,9 +215,10 @@ class AdminDriver
     }
 
     //获取用户信息
-    public static function getAdminInfoFour($where) : array
+    public static function getAdminInfoFour($where, $table = '')
     {
-        $info = AdminModel::query()->where($where)->first();
+        static::init($table);
+        $info = static::$driver->newQuery()->where($where)->first();
         if(empty($info)){
             return [];
         }else{
@@ -221,18 +239,18 @@ class AdminDriver
     }
 
     //通过用户id找角色id
-    public static function getRolleId($admin_id)
+    public static function getRolleId($admin_id, $table = '')
     {
-        
-        return AdminModel::query()->where('id',$admin_id)->value('role_id');
+        static::init($table);
+        return static::$driver->newQuery()->where('id',$admin_id)->value('role_id');
        
     }
 
     //通过角色id找用户id
-    public static function getAdminIdByRoleId($role_id)
+    public static function getAdminIdByRoleId($role_id, $table = '')
     {
-        
-        return AdminModel::query()->where('role_id',$role_id)->pluck('id')->toArray();
+        static::init($table);
+        return static::$driver->newQuery()->where('role_id',$role_id)->pluck('id')->toArray();
        
     }
 

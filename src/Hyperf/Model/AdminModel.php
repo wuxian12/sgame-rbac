@@ -37,5 +37,11 @@ class AdminModel extends Model
     {
         return $this->hasMany(RoleAdminModel::class, 'admin_id', 'id');
     }
+
+    public function setFillable($fillable)
+    {
+        $this->fillable = $fillable;
+        return $this;
+    }
 }
 

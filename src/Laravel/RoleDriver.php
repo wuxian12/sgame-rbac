@@ -5,12 +5,24 @@ use Wuxian\Rbac\Laravel\Model\RoleModel;
 
 class RoleDriver
 {
-	//所有角色列表
-    public static function roleAll($role_ids = [])
+	protected static $driver;
+
+    public static function init($table = '')
     {
-        return RoleModel::query()->where('is_del',1)->when($role_ids, function ($query, $role_ids) {
+        static::$driver = new RoleModel();
+        if(!empty($table)){
+            static::$driver->setTable($table);
+        }
+        return new static();
+    }
+    //所有角色列表
+    public static function roleAll($role_ids = [], $table = '')
+    {
+        static::init($table);
+        return static::$driver->newQuery()->where('is_del',1)->when($role_ids, function ($query, $role_ids) {
             return $query->whereIn('id', $role_ids);
         })->get()->toArray();
+        
     }
 
     /**
@@ -18,17 +30,19 @@ class RoleDriver
      * @param array $permission_ids 权限id
      * @return array
      */
-    public static function roleList($pageSize, $where = [])
+    public static function roleList($pageSize, $where = [], $table = '')
     {
         $where[] = ['is_del', '=', 1];
-        return RoleModel::query()->where($where)->paginate(intval($pageSize), ['*'], 'page')->toArray();
+        static::init($table);
+        return static::$driver->newQuery()->where($where)->paginate(intval($pageSize), ['*'], 'page')->toArray();
     }
 
 
     //获取角色名字
-    public static function getRoleNameList()
+    public static function getRoleNameList($table = '')
     {
-        return RoleModel::query()->pluck('name','id')->toArray();
+        static::init($table);
+        return static::$driver->newQuery()->pluck('name','id')->toArray();
     
     }
 
@@ -37,7 +51,7 @@ class RoleDriver
      * @param array $data
      * @return array
      */
-    public static function addRole($data)
+    public static function addRole($data, $table = '')
     {
         $where = [];
         $where[] = ['is_del', '=', 1];
@@ -46,11 +60,12 @@ class RoleDriver
             throw new \LogicException("name is duplicate,please update name",60001);  
         }
         $data['add_time'] = time();
-        return RoleModel::query()->insertGetId($data);
+        static::init($table);
+        return static::$driver->newQuery()->insertGetId($data);
     }
 
     //更新
-    public static function editRole($id, $data)
+    public static function editRole($id, $data, $table = '')
     {
         $where = [];
         $where[] = ['is_del', '=', 1];
@@ -62,20 +77,23 @@ class RoleDriver
         $data['update_time'] = time();
         $where1 = [];
         $where1[] = ['id', '=', $id];
-        return RoleModel::query()->where($where1)->update($data);
+        static::init($table);
+        return static::$driver->newQuery()->where($where1)->update($data);
     }
 
     //删除
-    public static function delRole($whereIn)
+    public static function delRole($whereIn, $table = '')
     {
-        return RoleModel::query()->whereIn('id',$whereIn)->update(['is_del'=>2]);
+        static::init($table);
+        return static::$driver->newQuery()->whereIn('id',$whereIn)->update(['is_del'=>2]);
         //return RoleModel::query()->whereIn('id',$whereIn)->delete();
     }
 
     //获取角色信息
-    public static function getRoleInfo($where)
+    public static function getRoleInfo($where, $table = '')
     {
-        $info = RoleModel::query()->where($where)->first();
+        static::init($table);
+        $info = static::$driver->newQuery()->where($where)->first();
         if(empty($info)){
             return [];
         }else{

@@ -31,5 +31,11 @@ class RoleAdminModel extends Model
      */
     protected $casts = [
     ];
+
+    public function setFillable($fillable)
+    {
+        $this->fillable = $fillable;
+        return $this;
+    }
 }
 

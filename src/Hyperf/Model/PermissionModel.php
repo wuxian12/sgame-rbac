@@ -33,5 +33,11 @@ class PermissionModel extends Model
         'add_time' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function setFillable($fillable)
+    {
+        $this->fillable = $fillable;
+        return $this;
+    }
+
 }
 

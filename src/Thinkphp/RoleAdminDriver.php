@@ -9,10 +9,23 @@ use Wuxian\Rbac\Thinkphp\Model\RoleAdminModel;
 class RoleAdminDriver
 {
 
-    //通过某角色id获取相应用户id
-    public static function adminIdsByRoleId($role_id)
+    protected static $driver;
+
+    public static function init($table = '', $fillable = [])
     {
-        return RoleAdminModel::query()->where('role_id', $role_id)->pluck('admin_id')->toArray();
+        static::$driver = new RoleAdminModel();
+        if(!empty($table)){
+            static::$driver->setTable($table);
+        }
+        
+        return new static();
+    }
+
+    //通过某角色id获取相应用户id
+    public static function adminIdsByRoleId($role_id, $table = '', $fillable = [])
+    {
+        static::init($table,$fillable);
+        return static::$driver->newQuery()->where('role_id', $role_id)->pluck('admin_id')->toArray();
     }
 
     /**
@@ -20,9 +33,10 @@ class RoleAdminDriver
      * @param int $admin_id 用户id
      * @return array
      */
-    public static function roleIdByUserid($admin_id)
+    public static function roleIdByUserid($admin_id, $table = '', $fillable = [])
     {
-        return RoleAdminModel::query()->where('admin_id', $admin_id)->pluck('role_id')->toArray();
+        static::init($table,$fillable);
+        return static::$driver->newQuery()->where('admin_id', $admin_id)->pluck('role_id')->toArray();
     }
 
     /**
@@ -30,16 +44,18 @@ class RoleAdminDriver
      * @param array $data
      * @return array
      */
-    public static function addRoleAdmin($data)
+    public static function addRoleAdmin($data, $table = '', $fillable = [])
     {
-        return RoleAdminModel::query()->insert($data);
+        static::init($table,$fillable);
+        return static::$driver->newQuery()->insert($data);
     }
 
 
     //删除
-    public static function delRoleAdmin($key,$whereIn)
+    public static function delRoleAdmin($key,$whereIn, $table = '', $fillable = [])
     {
-        return RoleAdminModel::query()->whereIn($key,$whereIn)->delete();
+        static::init($table,$fillable);
+        return static::$driver->newQuery()->whereIn($key,$whereIn)->delete();
     
     }
 
