@@ -11,20 +11,26 @@ class RoleAdminDriver
 
     protected static $driver;
 
-    public static function init($table = '', $fillable = [])
+    public static function init($config = [])
     {
-        static::$driver = new RoleAdminModel();
-        if(!empty($table)){
-            static::$driver->setTable($table);
+        if(empty(static::$driver)){
+            static::$driver = new RoleAdminModel();
+            if(!empty($config['role_admin_table'] ?? '')){
+                static::$driver->setTable($config['role_admin_table']);
+            }
+            if(!empty($config['role_admin_fillable'] ?? '')){
+                static::$driver->setFillable($config['role_admin_fillable']);
+            }
+           
         }
         
         return new static();
     }
 
     //通过某角色id获取相应用户id
-    public static function adminIdsByRoleId($role_id, $table = '', $fillable = [])
+    public static function adminIdsByRoleId($role_id, $config = [])
     {
-        static::init($table,$fillable);
+        static::init($config);
         return static::$driver->newQuery()->where('role_id', $role_id)->pluck('admin_id')->toArray();
     }
 
@@ -33,9 +39,9 @@ class RoleAdminDriver
      * @param int $admin_id 用户id
      * @return array
      */
-    public static function roleIdByUserid($admin_id, $table = '', $fillable = [])
+    public static function roleIdByUserid($admin_id, $config = [])
     {
-        static::init($table,$fillable);
+        static::init($config);
         return static::$driver->newQuery()->where('admin_id', $admin_id)->pluck('role_id')->toArray();
     }
 
@@ -44,17 +50,17 @@ class RoleAdminDriver
      * @param array $data
      * @return array
      */
-    public static function addRoleAdmin($data, $table = '', $fillable = [])
+    public static function addRoleAdmin($data, $config = [])
     {
-        static::init($table,$fillable);
+        static::init($config);
         return static::$driver->newQuery()->insert($data);
     }
 
 
     //删除
-    public static function delRoleAdmin($key,$whereIn, $table = '', $fillable = [])
+    public static function delRoleAdmin($key,$whereIn, $config = [])
     {
-        static::init($table,$fillable);
+        static::init($config);
         return static::$driver->newQuery()->whereIn($key,$whereIn)->delete();
     
     }

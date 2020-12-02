@@ -8,14 +8,17 @@ class RolePermissionDriver
 
     protected static $driver;
 
-    public static function init($table = '', $fillable = [])
+    public static function init($config = [])
     {
-        static::$driver = new RolePermissionModel();
-        if(!empty($table)){
-            static::$driver->setTable($table);
-        }
-        if(!empty($fillable)){
-            static::$driver->setFillable($fillable);
+        if(empty(static::$driver)){
+            static::$driver = new RolePermissionModel();
+            if(!empty($config['role_permission_table'] ?? '')){
+                static::$driver->setTable($config['role_permission_table']);
+            }
+            if(!empty($config['role_permission_fillable'] ?? '')){
+                static::$driver->setFillable($config['role_permission_fillable']);
+            }
+           
         }
         return new static();
     }
@@ -24,9 +27,9 @@ class RolePermissionDriver
      * @param array $role_id 角色id
      * @return array
      */
-    public static function permissionIdByRoleids($role_ids, $table = '', $fillable = [])
+    public static function permissionIdByRoleids($role_ids, $config = [])
     {
-        static::init($table,$fillable);
+        static::init($config);
         return static::$driver->newQuery()->whereIn('role_id', $role_ids)->pluck('permission_id')->toArray();
     }
 
@@ -35,10 +38,10 @@ class RolePermissionDriver
      * @param array $data
      * @return array
      */
-    public static function addRolepermission($role_id, $permissionIds, $table = '', $fillable = [])
+    public static function addRolepermission($role_id, $permissionIds, $config = [])
     {
     	//删除之前的
-    	static::delRolepermission('role_id',[$role_id]);
+    	static::delRolepermission('role_id',[$role_id],$config);
     	$permissionIdsArr = explode(',', $permissionIds);
     	if(empty($permissionIdsArr)){
     		throw new \LogicException("permissionIds can not empty",60001);
@@ -50,15 +53,15 @@ class RolePermissionDriver
             $tmp['role_id'] = $role_id;
             $map[] = $tmp;
     	}
-        static::init($table,$fillable);
+        static::init($config);
         return intval(static::$driver->newQuery()->insert($map));
     }
 
 
     //删除
-    public static function delRolepermission($key,$whereIn, $table = '', $fillable = [])
+    public static function delRolepermission($key,$whereIn, $config = [])
     {
-        static::init($table,$fillable);
+        static::init($config);
         return static::$driver->newQuery()->whereIn($key,$whereIn)->delete();
     
     }
