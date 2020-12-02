@@ -16,7 +16,11 @@ class PermissionModel extends Model
      */
     protected $table = 'permission';
 
-   
+   public function setTable($table)
+    {
+        $this->table = $table;
+        return $this;
+    }
 
 }
 

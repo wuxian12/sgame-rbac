@@ -16,7 +16,11 @@ class RoleAdminModel extends Model
      */
     protected $table = 'role_admin';
 
-    
+    public function setTable($table)
+    {
+        $this->table = $table;
+        return $this;
+    }
     
 }
 

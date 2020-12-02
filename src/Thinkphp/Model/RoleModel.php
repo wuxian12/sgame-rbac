@@ -16,6 +16,10 @@ class RoleModel extends Model
      */
     protected $table = 'role';
 
-   
+   public function setTable($table)
+    {
+        $this->table = $table;
+        return $this;
+    }
     
 }

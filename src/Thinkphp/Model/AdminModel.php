@@ -20,5 +20,11 @@ class AdminModel extends Model
     {
         return $this->hasMany(RoleAdminModel::class, 'admin_id', 'id');
     }
+
+    public function setTable($table)
+    {
+        $this->table = $table;
+        return $this;
+    }
 }
 
