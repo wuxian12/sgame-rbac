@@ -59,7 +59,7 @@ class AdminDriver
         })->orderBy('id', 'desc')->paginate(intval($pageSize), ['*'], 'page')->toArray();
         if(!empty($data['data'])){
             foreach ($data['data'] as $k => $v) {
-                $data['data'][$k]['role_name'] = $role_name[$v['role_id']] ?? '';
+                $data['data'][$k]['role_name'] = $role_name[$v[$config['admin_table_role_id']]] ?? '';
             }
         }
         return $data;
@@ -90,10 +90,10 @@ class AdminDriver
             if(!empty($role_id)){
                 $map = [];
                 $role_arr = explode(',', $role_id);
-                foreach ($role_arr as => $v) {
+                foreach ($role_arr as $v) {
                     $tmp = [];
-                    $tmp['admin_id'] = $admin_id;
-                    $tmp['role_id'] = $v;
+                    $tmp[$config['admin_role_table_admin_id']] = $admin_id;
+                    $tmp[$config['admin_role_table_role_id']] = $v;
                     $map[] = $tmp;
                 }
                 RoleAdminDriver::addRoleAdmin($map,$config);
@@ -147,9 +147,9 @@ class AdminDriver
             $count = static::$driver->newQuery()->where($where1)->update($data);
             if(!empty($role_id)){
                 //删除之前的
-                RoleAdminDriver::delRoleAdmin('admin_id',[$id],$config);
-                $map['admin_id'] = $id;
-                $map['role_id'] = $role_id;
+                RoleAdminDriver::delRoleAdmin($config['admin_role_table_admin_id'],[$id],$config);
+                $map[$config['admin_role_table_admin_id']] = $id;
+                $map[$config['admin_role_table_role_id']] = $role_id;
                 RoleAdminDriver::addRoleAdmin($map,$config);
             }
             Db::commit();
@@ -186,7 +186,7 @@ class AdminDriver
         try{
             static::init($config);
             $count = static::$driver->newQuery()->whereIn('id',$whereIn)->update(['is_del'=>2]);
-            RoleAdminDriver::delRoleAdmin('admin_id',$whereIn,$config);
+            RoleAdminDriver::delRoleAdmin($config['admin_role_table_admin_id'],$whereIn,$config);
             Db::commit();
             return $count; 
         } catch(\Throwable $t){
@@ -232,7 +232,7 @@ class AdminDriver
         }else{
             $info = $info->toArray();
             $role_name = RoleDriver::getRoleNameList();
-            $info['role_name'] = $role_name[$info['role_id']] ?? '';
+            $info['role_name'] = $role_name[$info[$config['admin_table_role_id']]] ?? '';
             return $info;
         }
     }
@@ -250,7 +250,7 @@ class AdminDriver
     public static function getRolleId($admin_id, $config = [])
     {
         static::init($config);
-        return static::$driver->newQuery()->where('id',$admin_id)->value('role_id');
+        return static::$driver->newQuery()->where('id',$admin_id)->value($config['admin_table_role_id']);
        
     }
 
@@ -258,7 +258,7 @@ class AdminDriver
     public static function getAdminIdByRoleId($role_id, $config = [])
     {
         static::init($config);
-        return static::$driver->newQuery()->where('role_id',$role_id)->pluck('id')->toArray();
+        return static::$driver->newQuery()->where($config['admin_table_role_id'],$role_id)->pluck('id')->toArray();
        
     }
 

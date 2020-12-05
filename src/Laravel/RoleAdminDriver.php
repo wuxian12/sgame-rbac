@@ -31,7 +31,7 @@ class RoleAdminDriver
     public static function adminIdsByRoleId($role_id, $config = [])
     {
         static::init($config);
-        return static::$driver->newQuery()->where('role_id', $role_id)->pluck('admin_id')->toArray();
+        return static::$driver->newQuery()->where($config['admin_role_table_role_id'], $role_id)->pluck($config['admin_role_table_admin_id'])->toArray();
     }
 
     /**
@@ -42,7 +42,7 @@ class RoleAdminDriver
     public static function roleIdByUserid($admin_id, $config = [])
     {
         static::init($config);
-        return static::$driver->newQuery()->where('admin_id', $admin_id)->pluck('role_id')->toArray();
+        return static::$driver->newQuery()->where($config['admin_role_table_admin_id'], $admin_id)->pluck($config['admin_role_table_role_id'])->toArray();
     }
 
     /**
@@ -71,7 +71,7 @@ class RoleAdminDriver
     public static function addAdminIdRoleIds($adminId, $roleIds, $config = [])
     {
         //删除之前的
-        static::delRoleAdmin('admin_id',[$adminId],$config);
+        static::delRoleAdmin($config['admin_role_table_admin_id'],[$adminId],$config);
         $roleIdsArr = explode(',', $roleIds);
         if(empty($roleIdsArr)){
             throw new \LogicException("roleIds can not empty",60001);
@@ -79,8 +79,8 @@ class RoleAdminDriver
         $map = [];
         foreach ($roleIdsArr as $v) {
             $tmp = [];
-            $tmp['role_id'] = $v;
-            $tmp['admin_id'] = $adminId;
+            $tmp[$config['admin_role_table_role_id']] = $v;
+            $tmp[$config['admin_role_table_admin_id']] = $adminId;
             $map[] = $tmp;
         }
         static::init($config);
@@ -93,7 +93,7 @@ class RoleAdminDriver
     public static function addRoleIdAdminIds($roleId, $adminIds, $config = [])
     {
         //删除之前的
-        static::delRoleAdmin('role_id',[$roleId],$config);
+        static::delRoleAdmin($config['admin_role_table_role_id'],[$roleId],$config);
         $adminIdsArr = explode(',', $adminIds);
         if(empty($adminIdsArr)){
             throw new \LogicException("adminIds can not empty",60001);
@@ -101,8 +101,8 @@ class RoleAdminDriver
         $map = [];
         foreach ($roleIdsArr as $v) {
             $tmp = [];
-            $tmp['admin_id'] = $v;
-            $tmp['role_id'] = $roleId;
+            $tmp[$config['admin_role_table_admin_id']] = $v;
+            $tmp[$config['admin_role_table_role_id']] = $roleId;
             $map[] = $tmp;
         }
         static::init($config);

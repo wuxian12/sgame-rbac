@@ -30,7 +30,7 @@ class RolePermissionDriver
     public static function permissionIdByRoleids($role_ids, $config = [])
     {
         static::init($config);
-        return static::$driver->newQuery()->whereIn('role_id', $role_ids)->pluck('permission_id')->toArray();
+        return static::$driver->newQuery()->whereIn($config['role_permission_table_role_id'], $role_ids)->pluck($config['role_permission_table_permission_id'])->toArray();
     }
 
     /**
@@ -41,7 +41,7 @@ class RolePermissionDriver
     public static function addRolepermission($role_id, $permissionIds, $config = [])
     {
     	//删除之前的
-    	static::delRolepermission('role_id',[$role_id],$config);
+    	static::delRolepermission($config['role_permission_table_role_id'],[$role_id],$config);
     	$permissionIdsArr = explode(',', $permissionIds);
     	if(empty($permissionIdsArr)){
     		throw new \LogicException("permissionIds can not empty",60001);
@@ -49,8 +49,8 @@ class RolePermissionDriver
     	$map = [];
     	foreach ($permissionIdsArr as $v) {
     		$tmp = [];
-    		$tmp['permission_id'] = $v;
-            $tmp['role_id'] = $role_id;
+    		$tmp[$config['role_permission_table_permission_id']] = $v;
+            $tmp[$config['role_permission_table_role_id']] = $role_id;
             $map[] = $tmp;
     	}
         static::init($config);
