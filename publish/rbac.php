@@ -20,11 +20,11 @@ return [
     'role_admin_table' => '', //角色用户表名
     'role_permission_table' => '', //角色权限表名
     
-    'admin_table_role_id' => 'role_id'  //四张表的用户表里的角色id,
-    'admin_role_table_admin_id' => 'admin_id'  //用户角色表里的用户id,
-    'admin_role_table_role_id' => 'role_id'  //用户角色表里的角色id,
-    'role_permission_table_permission_id' => 'permission_id'  //角色权限表的权限id,
-    'role_permission_table_role_id' => 'role_id'  //角色权限表的角色id,
+    'admin_table_role_id' => 'role_id',  //四张表的用户表里的角色id,
+    'admin_role_table_admin_id' => 'admin_id',  //用户角色表里的用户id,
+    'admin_role_table_role_id' => 'role_id',  //用户角色表里的角色id,
+    'role_permission_table_permission_id' => 'permission_id',  //角色权限表的权限id,
+    'role_permission_table_role_id' => 'role_id',  //角色权限表的角色id,
     
     'permission_model' => '', //自定义的权限模型
     'admin_model' => '', //自定义的管理员模型
