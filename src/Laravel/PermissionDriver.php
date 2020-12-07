@@ -42,9 +42,9 @@ class PermissionDriver
     public static function addPermission($data, $config = [])
     {
         $where = [];
-        $where[] = ['name', '=', $data['name'] ?? ''];
+        $where[] = [$config['permission_table_duplicate'], '=', $data[$config['permission_table_duplicate']] ?? ''];
         if(!empty(static::getPermissionInfo($where, $config))){
-            throw new \LogicException("name is duplicate,please update name",60001);  
+            throw new \LogicException($config['permission_table_duplicate']." is duplicate,please update",60001);  
         }
         $data['add_time'] = time();
         static::init($config);
@@ -55,10 +55,10 @@ class PermissionDriver
     public static function editPermission($id, $data, $config = [])
     {
         $where = [];
-        $where[] = ['name', '=', $data['name'] ?? ''];
+        $where[] = [$config['permission_table_duplicate'], '=', $data[$config['permission_table_duplicate']] ?? ''];
         $info = static::getPermissionInfo($where, $config);
         if(!empty($info) && $info['id'] != $id){
-            throw new \LogicException("name is duplicate,please update name",60001);  
+            throw new \LogicException($config['permission_table_duplicate']." is duplicate,please update",60001);  
         }
         $data['update_time'] = time();
         $where1 = [];
@@ -85,5 +85,4 @@ class PermissionDriver
             return $info->toArray();
         }
     }
-
 }

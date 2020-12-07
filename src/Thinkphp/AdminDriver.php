@@ -28,7 +28,7 @@ class AdminDriver
      */
     public static function getAdminList($pageSize, $where = [], $config = [])
     {
-        $where[] = ['is_del', '=', 1];
+        $where[] = [$config['false_delete_key'], '=', 1];
         static::init($config);
         $data = static::$driver->newQuery()->when($where, function ($query, $where) {
             return $query->where($where);
@@ -52,7 +52,7 @@ class AdminDriver
     public static function getAdminListFour($pageSize, $where = [], $config = [])
     {
         $role_name = RoleDriver::getRoleNameList($config);
-        $where[] = ['is_del', '=', 1];
+        $where[] = [$config['false_delete_key'], '=', 1];
         static::init($config);
         $data = static::$driver->newQuery()->when($where, function ($query, $where) {
             return $query->where($where);
@@ -75,13 +75,13 @@ class AdminDriver
     public static function addAdmin($data, $config = [])
     {
         $where = [];
-        $where[] = ['is_del', '=', 1];
-        $where[] = ['name', '=', $data['name'] ?? ''];
+        $where[] = [$config['false_delete_key'], '=', 1];
+        $where[] = [$config['admin_table_duplicate'], '=', $data[$config['admin_table_duplicate']] ?? ''];
         if(!empty(static::getAdminInfo($where,$config))){
-            throw new \LogicException("name is duplicate,please update name",60001);  
+            throw new \LogicException($config['admin_table_duplicate']." is duplicate,please update",60001);  
         }
-        $role_id = $data['role_id'] ?? 0;
-        unset($data['role_id']);
+        $role_id = $data[$config['admin_role_table_role_id']] ?? 0;
+        unset($data[$config['admin_role_table_role_id']]);
         Db::beginTransaction();
         try{
             $data['add_time'] = time();
@@ -115,10 +115,10 @@ class AdminDriver
     public static function addAdminFour($data, $config = [])
     {
         $where = [];
-        $where[] = ['is_del', '=', 1];
-        $where[] = ['name', '=', $data['name'] ?? ''];
+        $where[] = [$config['false_delete_key'], '=', 1];
+        $where[] = [$config['admin_table_duplicate'], '=', $data[$config['admin_table_duplicate']] ?? ''];
         if(!empty(static::getAdminInfo($where,$config))){
-            throw new \LogicException("name is duplicate,please update name",60001);  
+            throw new \LogicException($config['admin_table_duplicate']." is duplicate,please update",60001);   
         }
         $data['add_time'] = time();
         static::init($config);
@@ -130,11 +130,11 @@ class AdminDriver
     public static function editAdmin($id, $data, $config = [])
     {
         $where = [];
-        $where[] = ['is_del', '=', 1];
-        $where[] = ['name', '=', $data['name'] ?? ''];
+        $where[] = [$config['false_delete_key'], '=', 1];
+        $where[] = [$config['admin_table_duplicate'], '=', $data[$config['admin_table_duplicate']] ?? ''];
         $info = static::getAdminInfo($where,$config);
         if(!empty($info) && $info['id'] != $id){
-            throw new \LogicException("name is duplicate,please update name",60001);  
+            throw new \LogicException($config['admin_table_duplicate']." is duplicate,please update",60001); 
         }
         $role_id = $data['role_id'] ?? 0;
         unset($data['role_id']);
@@ -164,11 +164,11 @@ class AdminDriver
     public static function editAdminFour($id, $data, $config = [])
     {
         $where = [];
-        $where[] = ['is_del', '=', 1];
-        $where[] = ['name', '=', $data['name'] ?? ''];
+        $where[] = [$config['false_delete_key'], '=', 1];
+        $where[] = [$config['admin_table_duplicate'], '=', $data[$config['admin_table_duplicate']] ?? ''];
         $info = static::getAdminInfo($where,$config);
         if(!empty($info) && $info['id'] != $id){
-            throw new \LogicException("name is duplicate,please update name",60001);  
+            throw new \LogicException($config['admin_table_duplicate']." is duplicate,please update",60001); 
         }
         
         $data['update_time'] = time();
@@ -185,7 +185,7 @@ class AdminDriver
     {
         try{
             static::init($config);
-            $count = static::$driver->newQuery()->whereIn('id',$whereIn)->update(['is_del'=>2]);
+            $count = static::$driver->newQuery()->whereIn('id',$whereIn)->update([$config['false_delete_key']=>2]);
             RoleAdminDriver::delRoleAdmin($config['admin_role_table_admin_id'],$whereIn,$config);
             Db::commit();
             return $count; 
@@ -201,7 +201,7 @@ class AdminDriver
     public static function delAdminFour($whereIn, $config = [])
     {
         static::init($config);
-        return static::$driver->newQuery()->whereIn('id',$whereIn)->update(['is_del'=>2]);
+        return static::$driver->newQuery()->whereIn('id',$whereIn)->update([$config['false_delete_key']=>2]);
        
     }
 

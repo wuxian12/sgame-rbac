@@ -22,7 +22,7 @@ class RoleDriver
     public static function roleAll($role_ids = [], $config = [])
     {
         static::init($config);
-        return static::$driver->newQuery()->where('is_del',1)->when($role_ids, function ($query, $role_ids) {
+        return static::$driver->newQuery()->where($config['false_delete_key'],1)->when($role_ids, function ($query, $role_ids) {
             return $query->whereIn('id', $role_ids);
         })->get()->toArray();
         
@@ -35,7 +35,7 @@ class RoleDriver
      */
     public static function roleList($pageSize, $where = [], $config = [])
     {
-        $where[] = ['is_del', '=', 1];
+        $where[] = [$config['false_delete_key'], '=', 1];
         static::init($config);
         return static::$driver->newQuery()->where($where)->paginate(intval($pageSize), ['*'], 'page')->toArray();
     }
@@ -45,7 +45,7 @@ class RoleDriver
     public static function getRoleNameList($config = [])
     {
         static::init($config);
-        return static::$driver->newQuery()->pluck('name','id')->toArray();
+        return static::$driver->newQuery()->pluck($config['role_table_duplicate'],'id')->toArray();
     
     }
 
@@ -57,10 +57,10 @@ class RoleDriver
     public static function addRole($data, $config = [])
     {
         $where = [];
-        $where[] = ['is_del', '=', 1];
-        $where[] = ['name', '=', $data['name'] ?? ''];
+        $where[] = [$config['false_delete_key'], '=', 1];
+        $where[] = [$config['role_table_duplicate'], '=', $data[$config['role_table_duplicate']] ?? ''];
         if(!empty(static::getRoleInfo($where,$config))){
-            throw new \LogicException("name is duplicate,please update name",60001);  
+            throw new \LogicException($config['role_table_duplicate']." is duplicate,please update",60001);  
         }
         $data['add_time'] = time();
         static::init($config);
@@ -71,11 +71,11 @@ class RoleDriver
     public static function editRole($id, $data, $config = [])
     {
         $where = [];
-        $where[] = ['is_del', '=', 1];
-        $where[] = ['name', '=', $data['name'] ?? ''];
+        $where[] = [$config['false_delete_key'], '=', 1];
+        $where[] = [$config['role_table_duplicate'], '=', $data[$config['role_table_duplicate']] ?? ''];
         $info = static::getRoleInfo($where,$config);
         if(!empty($info) && $info['id'] != $id){
-            throw new \LogicException("name is duplicate,please update name",60001);  
+            throw new \LogicException($config['role_table_duplicate']." is duplicate,please update",60001); 
         }
         $data['update_time'] = time();
         $where1 = [];
@@ -88,7 +88,7 @@ class RoleDriver
     public static function delRole($whereIn, $config = [])
     {
         static::init($config);
-        return static::$driver->newQuery()->whereIn('id',$whereIn)->update(['is_del'=>2]);
+        return static::$driver->newQuery()->whereIn('id',$whereIn)->update([$config['false_delete_key']=>2]);
         //return RoleModel::query()->whereIn('id',$whereIn)->delete();
     }
 

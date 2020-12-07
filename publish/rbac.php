@@ -19,6 +19,11 @@ return [
     'role_table' => '', //角色表名
     'role_admin_table' => '', //角色用户表名
     'role_permission_table' => '', //角色权限表名
+
+    'admin_table_duplicate' => 'name', //用户表去重判断
+    'role_table_duplicate' => 'name', //角色表去重判断
+    'permission_table_duplicate' => 'name', //权限表去重判断
+    'false_delete_key' => 'is_del', //假删除的key
     
     'admin_table_role_id' => 'role_id',  //四张表的用户表里的角色id,
     'admin_role_table_admin_id' => 'admin_id',  //用户角色表里的用户id,
