@@ -46,9 +46,9 @@ class Rbac implements RbacInterface
     	return FunctionUtil::getTree($this->permissionAll([['is_web', '=', 1]],$adminId));
     }
     //获取所有权限
-    public function permissionList(array $data = []) :array
+    public function permissionList(array $data = [], int $adminId) :array
     {
-    	return FunctionUtil::getTree($this->superPermission($data));
+        return FunctionUtil::getTree($this->permissionAll([],$adminId));
     }
 
     //添加权限
